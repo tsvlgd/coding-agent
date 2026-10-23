@@ -57,19 +57,37 @@ Place an `AGENT.MD` file in your project root. Its contents are injected into th
 
 ## Architecture
 
-```
-main.py (CLI)
-  └── Agent (async generator — yields typed events)
-        └── Session (owns all subsystems)
-              ├── LLMClient          OpenAI-compatible streaming
-              ├── ContextManager     transcript + compaction + pruning
-              ├── ToolRegistry       builtins + MCP + discovery (cached schemas)
-              ├── ApprovalManager    safety policies + dangerous cmd detection
-              ├── HookSystem         pre/post lifecycle hooks
-              └── MCPManager         MCP server connections + reconcile
+```mermaid
+flowchart TD
+    CLI[main.py CLI] --> AGENT[Agent<br/>async generator]
+    AGENT --> SESSION[Session<br/>owns all subsystems]
+    SESSION --> LLM[LLMClient<br/>OpenAI-compatible streaming]
+    SESSION --> CTX[ContextManager<br/>transcript + compaction + pruning]
+    SESSION --> REG[ToolRegistry<br/>builtins + MCP + discovery]
+    SESSION --> AP[ApprovalManager<br/>safety policies]
+    SESSION --> HOOKS[HookSystem<br/>lifecycle hooks]
+    SESSION --> MCP[MCPManager<br/>connect / reconcile]
+    REG --> BASE[Tool ABC<br/>validate → hook → approve → execute]
+    BASE --> BUILTIN[Built-in tools<br/>read write edit shell grep ...]
+    BASE --> MCPTOOL[MCP tools<br/>adapted from servers]
+    BASE --> DISC[Discovered tools<br/>.agent/tools/*.py]
+
+    style CLI fill:#1a1a2e,stroke:#4a4a6a,color:#e0e0e0
+    style AGENT fill:#16213e,stroke:#4a4a6a,color:#e0e0e0
+    style SESSION fill:#0f3460,stroke:#4a4a6a,color:#e0e0e0
+    style LLM fill:#1a1a2e,stroke:#4a4a6a,color:#e0e0e0
+    style CTX fill:#16213e,stroke:#4a4a6a,color:#e0e0e0
+    style REG fill:#0f3460,stroke:#4a4a6a,color:#e0e0e0
+    style AP fill:#1a1a2e,stroke:#4a4a6a,color:#e0e0e0
+    style HOOKS fill:#16213e,stroke:#4a4a6a,color:#e0e0e0
+    style MCP fill:#0f3460,stroke:#4a4a6a,color:#e0e0e0
+    style BASE fill:#1a1a2e,stroke:#4a4a6a,color:#e0e0e0
+    style BUILTIN fill:#16213e,stroke:#4a4a6a,color:#e0e0e0
+    style MCPTOOL fill:#16213e,stroke:#4a4a6a,color:#e0e0e0
+    style DISC fill:#16213e,stroke:#4a4a6a,color:#e0e0e0
 ```
 
-The agent loop runs turn-by-turn: compress if needed → stream from LLM → execute tools → prune → repeat. Config changes land between turns, never during (turn-atomic). See [docs/arch.md](docs/arch.md) for mermaid diagrams and full details.
+The agent loop runs turn-by-turn: compress if needed → stream from LLM → execute tools → prune → repeat. Config changes land between turns, never during (turn-atomic). See [docs/arch.md](docs/arch.md) for full details.
 
 ## Features
 
