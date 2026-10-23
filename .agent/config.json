@@ -3,7 +3,7 @@
   "approval": "auto",
   "model": {
     "temperature": 0.5,
-    "name": "cohere/north-mini-code:free"
+    "name": "openai/gpt-oss-20b"
   },
   "mcp_servers": {
     "filesystem": {
