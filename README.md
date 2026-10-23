@@ -57,17 +57,19 @@ Place an `AGENT.MD` file in your project root. Its contents are injected into th
 
 ## Architecture
 
-See [docs/arch.md](docs/arch.md) for the full architecture, mermaid diagrams, and component descriptions.
+```
+main.py (CLI)
+  └── Agent (async generator — yields typed events)
+        └── Session (owns all subsystems)
+              ├── LLMClient          OpenAI-compatible streaming
+              ├── ContextManager     transcript + compaction + pruning
+              ├── ToolRegistry       builtins + MCP + discovery (cached schemas)
+              ├── ApprovalManager    safety policies + dangerous cmd detection
+              ├── HookSystem         pre/post lifecycle hooks
+              └── MCPManager         MCP server connections + reconcile
+```
 
-```
-main.py (CLI) → Agent (async generator) → Session
-                                            ├── LLMClient (OpenAI-compatible)
-                                            ├── ContextManager (compaction, pruning)
-                                            ├── ToolRegistry (builtins + MCP + discovery)
-                                            ├── ApprovalManager (safety policies)
-                                            ├── HookSystem (lifecycle hooks)
-                                            └── MCPManager (MCP server connections)
-```
+The agent loop runs turn-by-turn: compress if needed → stream from LLM → execute tools → prune → repeat. Config changes land between turns, never during (turn-atomic). See [docs/arch.md](docs/arch.md) for mermaid diagrams and full details.
 
 ## Features
 
