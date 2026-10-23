@@ -1,0 +1,15 @@
+{
+  "hooks_enabled": false,
+  "approval": "auto",
+  "model": {
+    "temperature": 0.5,
+    "name": "cohere/north-mini-code:free"
+  },
+  "mcp_servers": {
+    "filesystem": {
+      "enabled": true,
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", ".", "/tmp"]
+    }
+  }
+}

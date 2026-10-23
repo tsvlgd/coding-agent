@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.git
+.venv/
+.env
+.DS_Store
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# Planning and design docs (internal)
+docs/plan*.md
+docs/*-2026-*.md
